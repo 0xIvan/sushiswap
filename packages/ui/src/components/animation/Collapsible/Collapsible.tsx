@@ -1,4 +1,6 @@
-import { FC, ReactNode } from 'react'
+'use client'
+
+import type { FC, ReactNode } from 'react'
 import { animated, useSpring } from 'react-spring'
 import useResizeObserver from 'use-resize-observer'
 
@@ -9,11 +11,18 @@ interface Collapsible {
   afterChange?: () => void
 }
 
-export const Collapsible: FC<Collapsible> = ({ className, open, children, afterChange }) => {
+const AnimatedDiv = animated.div as any
+
+export const Collapsible: FC<Collapsible> = ({
+  className,
+  open,
+  children,
+  afterChange,
+}) => {
   const { ref, height } = useResizeObserver()
 
   const props = useSpring({
-    height: open ? height ?? 0 : 0,
+    height: open ? (height ?? 0) : 0,
     config: {
       mass: 1.2,
       tension: 300,
@@ -25,7 +34,7 @@ export const Collapsible: FC<Collapsible> = ({ className, open, children, afterC
   })
 
   return (
-    <animated.div
+    <AnimatedDiv
       style={{
         ...props,
         overflow: 'hidden',
@@ -36,6 +45,6 @@ export const Collapsible: FC<Collapsible> = ({ className, open, children, afterC
       <div ref={ref} className={className}>
         {children}
       </div>
-    </animated.div>
+    </AnimatedDiv>
   )
 }

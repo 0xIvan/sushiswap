@@ -1,20 +1,27 @@
-import { getAddress, isAddress } from '@ethersproject/address'
-import { Token } from '@sushiswap/currency'
-import { useCallback, useMemo } from 'react'
+'use client'
 
+import { useCallback, useMemo } from 'react'
+import { Token } from 'sushi/currency'
+import { getAddress, isAddress } from 'viem/utils'
+
+import type { EvmChainId } from 'sushi'
 import { useLocalStorage } from './useLocalStorage'
 
 type Data = {
-  chainId: number
+  chainId: EvmChainId
   id: string
   address: string
   decimals: number
   name: string | undefined
   symbol: string | undefined
+  logoUrl: string | undefined
 }
 
 export const useCustomTokens = () => {
-  const [value, setValue] = useLocalStorage<Record<string, Data>>('sushi.customTokens', {})
+  const [value, setValue] = useLocalStorage<Record<string, Data>>(
+    'sushi.customTokens',
+    {},
+  )
 
   const hydrate = useCallback((data: Record<string, Data>) => {
     return Object.entries(data).reduce<Record<string, Token>>(
@@ -22,7 +29,7 @@ export const useCustomTokens = () => {
         acc[k] = new Token({ address, chainId, decimals, name, symbol })
         return acc
       },
-      {}
+      {},
     )
   }, [])
 
@@ -35,6 +42,7 @@ export const useCustomTokens = () => {
         name: currency.name,
         symbol: currency.symbol,
         decimals: currency.decimals,
+        logoUrl: currency.logoUrl,
       }))
 
       setValue((prev) => {
@@ -43,11 +51,11 @@ export const useCustomTokens = () => {
             acc[`${cur.chainId}:${cur.address}`] = cur
             return acc
           },
-          { ...prev }
+          { ...prev },
         )
       })
     },
-    [setValue]
+    [setValue],
   )
 
   const removeCustomToken = useCallback(
@@ -63,7 +71,7 @@ export const useCustomTokens = () => {
         }, {})
       })
     },
-    [setValue]
+    [setValue],
   )
 
   const hasToken = useCallback(
@@ -82,7 +90,7 @@ export const useCustomTokens = () => {
       }
       return !!value[`${currency.chainId}:${currency.address}`]
     },
-    [value]
+    [value],
   )
 
   const mutate = useCallback(
@@ -90,7 +98,7 @@ export const useCustomTokens = () => {
       if (type === 'add') addCustomToken(currency)
       if (type === 'remove') removeCustomToken(currency[0])
     },
-    [addCustomToken, removeCustomToken]
+    [addCustomToken, removeCustomToken],
   )
 
   return useMemo(() => {

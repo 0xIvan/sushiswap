@@ -1,11 +1,12 @@
 {
   "name": "@sushiswap/graph-client",
-  "version": "0.2.3",
-  "description": "Sushi Graph Client",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Graph Client",
   "keywords": [
     "sushi",
     "graph",
-    "client"
+    "subgraph"
   ],
   "repository": {
     "type": "git",
@@ -13,92 +14,72 @@
     "directory": "packages/graph-client"
   },
   "license": "MIT",
-  "author": "Matthew Lilley <hello@matthewLilley.com>",
+  "author": "LufyCZ <me@lufy.cz>",
   "type": "module",
   "exports": {
-    ".": {
-      "types": "./.graphclient/index.d.ts",
-      "default": "./.graphclient/index.js"
+    "./*": {
+      "types": "./dist/subgraphs/*/index.d.ts",
+      "import": "./dist/subgraphs/*/index.js",
+      "default": "./dist/subgraphs/*/index.js"
+    },
+    "./multichain": {
+      "types": "./dist/multichain/index.d.ts",
+      "import": "./dist/multichain/index.js",
+      "default": "./dist/multichain/index.js"
+    },
+    "./composite/*": {
+      "types": "./dist/composite/*.d.ts",
+      "import": "./dist/composite/*.js",
+      "default": "./dist/composite/*.js"
     },
     "./package.json": "./package.json"
   },
-  "main": ".graphclient/index.js",
-  "types": ".graphclient/index.d.ts",
+  "typesVersions": {
+    "*": {
+      ".": [
+        "src/subgraphs/**/*",
+        "src/lib/**/*"
+      ],
+      "./multichain": [
+        "src/multichain/*"
+      ],
+      "./composite": [
+        "src/composite/*"
+      ]
+    }
+  },
+  "typings": "dist/index.d.ts",
   "files": [
-    ".graphclient"
+    "dist/**"
   ],
   "scripts": {
-    "build": "graphclient build --fileType js --throwOnInvalidConfig && rm -f .graphclient/package.json && tsc",
-    "check": "tsc --pretty --noEmit",
-    "clean": "rm -rf .turbo .graphclient node_modules",
-    "dev": "graphclient serve-dev",
-    "lint": "TIMING=1 eslint **/*.ts",
-    "lint:fix": "TIMING=1 eslint **/*.ts --fix",
+    "build": "pnpm build:types && pnpm build:compile",
+    "build:compile": "tsc && tsc-alias -p tsconfig.json",
+    "build:types": "rm -rf src/subgraphs/*/*.d.ts && gql.tada generate output && gql.tada turbo",
+    "check": "pnpm build:types && tsc --pretty --noEmit",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
+    "dev": "tsc --watch",
     "prepublishOnly": "pnpm build",
-    "start": "graphclient serve-prod",
-    "validate": "graphclient validate"
-  },
-  "jest": {
-    "preset": "@sushiswap/jest-config/node"
+    "update-data-api-types": "tsx scripts/update-data-api-types.ts",
+    "update-schemas": "tsx scripts/update-schemas.ts"
   },
   "dependencies": {
-    "@graphprotocol/client-add-source-name": "2.0.0",
-    "@graphprotocol/client-auto-pagination": "2.0.0",
-    "@graphprotocol/client-auto-type-merging": "2.0.0",
-    "@graphql-mesh/cache-localforage": "0.94.1",
-    "@graphql-mesh/cross-helpers": "0.4.0",
-    "@graphql-mesh/graphql": "0.94.2",
-    "@graphql-mesh/http": "0.94.4",
-    "@graphql-mesh/merger-stitching": "0.94.1",
-    "@graphql-mesh/runtime": "0.94.1",
-    "@graphql-mesh/store": "0.94.1",
-    "@graphql-mesh/transform-filter-schema": "0.94.1",
-    "@graphql-mesh/transform-prefix": "0.94.2",
-    "@graphql-mesh/transform-prune": "0.94.1",
-    "@graphql-mesh/transform-rename": "0.94.2",
-    "@graphql-mesh/transform-type-merging": "0.94.1",
-    "@graphql-mesh/types": "0.94.1",
-    "@graphql-mesh/utils": "0.94.1",
-    "@graphql-tools/merge": "9.0.0",
-    "@sushiswap/validate": "workspace:*",
-    "date-fns": "2.29.3",
-    "ethers": "5.7.2",
-    "node-fetch": "3.3.0",
-    "tslib": "2.5.0"
+    "@sushiswap/steer-sdk": "workspace:*",
+    "gql.tada": "1.7.5",
+    "graphql": "16.6.0",
+    "graphql-request": "7.1.0",
+    "json-bigint": "1.0.0",
+    "sushi": "catalog:web3",
+    "viem": "catalog:web3"
   },
   "devDependencies": {
-    "@graphprotocol/client-cli": "3.0.0",
-    "@sushiswap/chain": "workspace:*",
-    "@sushiswap/eslint-config": "workspace:*",
-    "@sushiswap/graph-config": "workspace:*",
-    "@sushiswap/jest-config": "workspace:*",
-    "@sushiswap/prettier-config": "workspace:*",
-    "@sushiswap/typescript-config": "workspace:*",
-    "@sushiswap/wagmi-config": "workspace:*",
-    "@types/jest": "^29.2.0",
-    "@types/node": "18",
-    "@types/numeral": "2.0.2",
-    "@wagmi/core": "0.10.1-cjs",
-    "eslint": "8.43.0",
-    "graphql": "16.6.0",
-    "jest": "29.3.1",
-    "ts-jest": "29.0.3",
-    "typescript": "5.1.6"
-  },
-  "peerDependencies": {
-    "@sushiswap/chain": "*",
-    "@wagmi/core": "*",
-    "graphql": "*"
-  },
-  "peerDependenciesMeta": {
-    "@sushiswap/chain": {
-      "optional": false
-    },
-    "@wagmi/core": {
-      "optional": false
-    },
-    "graphql": {
-      "optional": false
-    }
+    "@0no-co/graphqlsp": "1.12.3",
+    "@tsconfig/node20": "catalog:tsconfig",
+    "@tsconfig/strictest": "catalog:tsconfig",
+    "@types/json-bigint": "1.0.4",
+    "@types/node": "20",
+    "tsc-alias": "1.8.10",
+    "tsx": "4.19.0",
+    "typescript": "catalog:"
   }
 }

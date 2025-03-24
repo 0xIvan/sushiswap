@@ -1,5 +1,7 @@
 import classNames from 'classnames'
-import { FC, ReactNode } from 'react'
+import type { FC, ReactNode } from 'react'
+
+import { Card } from '../card'
 
 export interface ListControlProps {
   children: ReactNode
@@ -8,6 +10,13 @@ export interface ListControlProps {
 
 export const ListControl: FC<ListControlProps> = ({ children, className }) => {
   return (
-    <div className={classNames('bg-white dark:bg-secondary rounded-xl overflow-hidden', className)}>{children}</div>
+    <Card
+      className={classNames(
+        'p-1 border-accent bg-white dark:!bg-secondary rounded-xl overflow-hidden',
+        className,
+      )}
+    >
+      {children}
+    </Card>
   )
 }

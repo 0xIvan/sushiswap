@@ -1,8 +1,0 @@
-{
-  "extends": ["@tsconfig/strictest/tsconfig", "@tsconfig/node18/tsconfig"],
-  "include": ["."],
-  "exclude": ["node_modules", ".vercel"],
-  "compilerOptions": {
-    "resolveJsonModule": true
-  }
-}

@@ -1,5 +1,6 @@
-import React, { ComponentType } from 'react'
-import { FC } from 'react'
+import type React from 'react'
+import type { ComponentType } from 'react'
+import type { FC, JSX } from 'react'
 
 export enum AppType {
   Root = 'Explore Apps',
@@ -24,8 +25,9 @@ export type AnyTag = keyof JSX.IntrinsicElements
 
 // Source: https://github.com/emotion-js/emotion/blob/master/packages/styled-base/types/helper.d.ts
 // A more precise version of just React.ComponentPropsWithoutRef on its own
-export type PropsOf<C extends keyof JSX.IntrinsicElements | React.JSXElementConstructor<any>> =
-  JSX.LibraryManagedAttributes<C, React.ComponentPropsWithoutRef<C>>
+export type PropsOf<
+  C extends keyof JSX.IntrinsicElements | React.JSXElementConstructor<any>,
+> = JSX.LibraryManagedAttributes<C, React.ComponentPropsWithoutRef<C>>
 
 type AsProp<C extends React.ElementType> = {
   /**
@@ -42,7 +44,7 @@ type AsProp<C extends React.ElementType> = {
  */
 export type ExtendableProps<
   ExtendedProps = Record<string, never>,
-  OverrideProps = Record<string, never>
+  OverrideProps = Record<string, never>,
 > = OverrideProps & Omit<ExtendedProps, keyof OverrideProps>
 
 /**
@@ -50,10 +52,10 @@ export type ExtendableProps<
  * props like children, className & style work, as well as element-specific
  * attributes like aria roles. The component (`C`) must be passed in.
  */
-export type InheritableElementProps<C extends React.ElementType, Props = Record<string, never>> = ExtendableProps<
-  PropsOf<C>,
-  Props
->
+export type InheritableElementProps<
+  C extends React.ElementType,
+  Props = Record<string, never>,
+> = ExtendableProps<PropsOf<C>, Props>
 
 /**
  * A more sophisticated version of `InheritableElementProps` where
@@ -61,13 +63,14 @@ export type InheritableElementProps<C extends React.ElementType, Props = Record<
  */
 export type PolymorphicComponentProps<
   C extends React.ElementType,
-  Props = Record<string, never>
+  Props = Record<string, never>,
 > = InheritableElementProps<C, Props & AsProp<C>>
 
 /**
  * Utility type to extract the `ref` prop from a polymorphic component
  */
-export type PolymorphicRef<C extends React.ElementType> = React.ComponentPropsWithRef<C>['ref']
+export type PolymorphicRef<C extends React.ElementType> =
+  React.ComponentPropsWithRef<C>['ref']
 
 /**
  * A wrapper of `PolymorphicComponentProps` that also includes the `ref`
@@ -75,8 +78,11 @@ export type PolymorphicRef<C extends React.ElementType> = React.ComponentPropsWi
  */
 export type PolymorphicComponentPropsWithRef<
   C extends React.ElementType,
-  Props = Record<string, never>
+  Props = Record<string, never>,
 > = PolymorphicComponentProps<C, Props> & { ref?: PolymorphicRef<C> }
 
 export type IconProps = React.ComponentProps<'svg'>
 export type IconComponent = FC<IconProps>
+export type NakedNetworkIconComponent = FC<
+  IconProps & { circle?: React.ReactNode }
+>
